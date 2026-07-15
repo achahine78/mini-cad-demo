@@ -95,12 +95,16 @@ export class InteractionManager {
         return Math.round(value / gridSnap) * gridSnap;
     }
 
-    onPointerUp = () => {
+    onPointerUp = (event: PointerEvent) => {
         this.isDragging = false;
         this.sceneManager.controls.enabled = true;
         this.canvas.style.cursor = "";
+        if (this.canvas.hasPointerCapture(event.pointerId)) {
+            this.canvas.releasePointerCapture(event.pointerId);
+        }
         this.canvas.removeEventListener("pointermove", this.onPointerMove);
         this.canvas.removeEventListener("pointerup", this.onPointerUp);
+        this.canvas.removeEventListener("pointercancel", this.onPointerUp);
     };
 
     onPointerDown = (event: PointerEvent) => {
@@ -128,14 +132,17 @@ export class InteractionManager {
         this.sceneManager.controls.enabled = false;
         this.canvas.style.cursor = "grabbing";
 
+        this.canvas.setPointerCapture(event.pointerId);
         this.canvas.addEventListener("pointermove", this.onPointerMove);
         this.canvas.addEventListener("pointerup", this.onPointerUp);
+        this.canvas.addEventListener("pointercancel", this.onPointerUp);
     };
 
     dispose() {
         this.canvas.removeEventListener("pointerdown", this.onPointerDown);
         this.canvas.removeEventListener("pointermove", this.onPointerMove);
         this.canvas.removeEventListener("pointerup", this.onPointerUp);
+        this.canvas.removeEventListener("pointercancel", this.onPointerUp);
         window.removeEventListener("keydown", this.onKeyDown);
     }
 }
