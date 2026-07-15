@@ -6,6 +6,7 @@ export class InteractionManager {
     private canvas: HTMLElement;
     private raycaster = new THREE.Raycaster();
     private dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    private grabOffset = new THREE.Vector3();
     private isDragging = false;
 
     selectedPart: THREE.Mesh | null = null;
@@ -51,7 +52,7 @@ export class InteractionManager {
         }
 
         this.selectedPart = part;
-        if (this.selectedPart) {
+        if (part) {
             this.setHighlightValue(part, true);
         }
     }
@@ -64,10 +65,11 @@ export class InteractionManager {
         const intersection = new THREE.Vector3();
 
         if (this.raycaster.ray.intersectPlane(this.dragPlane, intersection)) {
+            const target = intersection.add(this.grabOffset);
             this.selectedPart.position.set(
-                this.snap(intersection.x, 0.5),
+                this.snap(target.x, 0.5),
                 this.selectedPart.position.y,
-                this.snap(intersection.z, 0.5),
+                this.snap(target.z, 0.5),
             );
         }
     };
@@ -85,6 +87,8 @@ export class InteractionManager {
     };
 
     onPointerDown = (event: PointerEvent) => {
+        if (event.button !== 0) return;
+
         const pointerNdc = this.getPointerNdc(event);
         const part = this.pickPart(pointerNdc);
         this.select(part);
@@ -95,6 +99,13 @@ export class InteractionManager {
             new THREE.Vector3(0, 1, 0),
             part.position,
         );
+
+        const intersection = new THREE.Vector3();
+        if (this.raycaster.ray.intersectPlane(this.dragPlane, intersection)) {
+            this.grabOffset.copy(part.position).sub(intersection);
+        } else {
+            this.grabOffset.set(0, 0, 0);
+        }
 
         this.isDragging = true;
         this.sceneManager.controls.enabled = false;
