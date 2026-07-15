@@ -49,7 +49,17 @@ export const PARTS_CATALOG: PartDefinition[] = [
     },
 ];
 
-const getGeometry = ({ type, width, height, depth }) => {
+const getGeometry = ({
+    type,
+    width,
+    height,
+    depth,
+}: {
+    type: PartType;
+    width: number;
+    height: number;
+    depth: number;
+}) => {
     if (type === "rectangular_extrusion" || type === "flat_plate") {
         return new THREE.BoxGeometry(width, height, depth);
     }
@@ -73,6 +83,9 @@ export const createPartMesh = ({
     id: string;
 }) => {
     const part = PARTS_CATALOG.find((p) => p.type === type);
+    if (!part) {
+        throw new Error(`Unknown part type: ${type}`);
+    }
     const { width, height, depth } = part.dimensions;
 
     const geometry = getGeometry({ type, width, height, depth });

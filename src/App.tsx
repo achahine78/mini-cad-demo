@@ -25,6 +25,7 @@ function App() {
         manager.scene.add(mesh);
 
         const addedPartDefinition = PARTS_CATALOG.find((p) => p.type === type);
+        if (!addedPartDefinition) return;
 
         setParts((p) => [...p, addedPartDefinition]);
         setPartCounter((c) => c + 1);
