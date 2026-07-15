@@ -1,5 +1,11 @@
+import { Viewport } from "./components/Viewport";
+
 function App() {
-  return <h1>Hello, world!</h1>
+    return (
+        <div className="app">
+            <Viewport />
+        </div>
+    );
 }
 
-export default App
+export default App;
