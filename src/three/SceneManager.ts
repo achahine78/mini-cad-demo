@@ -8,6 +8,7 @@ export class SceneManager {
     controls: OrbitControls;
 
     private animationId = 0;
+    private resizeObserver: ResizeObserver;
 
     constructor(viewport: HTMLElement) {
         const { width, height } = viewport.getBoundingClientRect();
@@ -41,6 +42,14 @@ export class SceneManager {
         this.controls.dampingFactor = 0.05;
         this.controls.maxPolarAngle = Math.PI / 2 - 0.05;
 
+        this.resizeObserver = new ResizeObserver(() => {
+            const { width, height } = viewport.getBoundingClientRect();
+            this.camera.aspect = width / height;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(width, height);
+        });
+        this.resizeObserver.observe(viewport);
+
         this.animate();
     }
 
@@ -51,6 +60,7 @@ export class SceneManager {
     };
 
     dispose() {
+        this.resizeObserver.disconnect();
         cancelAnimationFrame(this.animationId);
         this.controls.dispose();
         this.renderer.dispose();
