@@ -2,15 +2,21 @@ import { useEffect, useRef } from "react";
 import { SceneManager } from "../three/SceneManager";
 import "./Viewport.css";
 
-export const Viewport = () => {
+type Props = {
+    onSceneManagerReady: (manager: SceneManager) => void;
+};
+
+export const Viewport = ({ onSceneManagerReady }: Props) => {
     const viewportRef = useRef<HTMLDivElement | null>(null);
     const sceneManagerRef = useRef<SceneManager | null>(null);
 
     useEffect(() => {
         const viewport = viewportRef.current;
-        if (!viewport) return
+        if (!viewport) return;
         const sceneManager = new SceneManager(viewport);
         sceneManagerRef.current = sceneManager;
+
+        onSceneManagerReady(sceneManager);
 
         return () => {
             sceneManager.dispose();
