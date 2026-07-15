@@ -22,6 +22,9 @@ export class SceneManager {
 
         this.scene.background = new THREE.Color(0xf0f2f5);
 
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        this.scene.add(ambientLight);
+
         const gridHelperSize = 20;
         const gridHelperDivisions = 40;
         const gridHelper = new THREE.GridHelper(

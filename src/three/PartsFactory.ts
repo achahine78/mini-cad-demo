@@ -35,7 +35,7 @@ export const PARTS_CATALOG: PartDefinition[] = [
             height: 0.1,
             depth: 2,
         },
-        color: 0x6b7d8f,
+        color: 0xd3d3d3,
     },
     {
         type: "cylindrical_extrusion",
