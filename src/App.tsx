@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { Viewport } from "./components/Viewport";
+import { Sidebar } from "./components/Sidebar";
 import type { SceneManager } from "./three/SceneManager";
 import {
     createPartMesh,
@@ -30,11 +31,14 @@ function App() {
     };
     return (
         <div className="app">
-            <Viewport
-                onSceneManagerReady={(manager) => {
-                    sceneManagerRef.current = manager;
-                }}
-            />
+            <Sidebar onAddPart={handleAddPart} />
+            <div className="viewport-container">
+                <Viewport
+                    onSceneManagerReady={(manager) => {
+                        sceneManagerRef.current = manager;
+                    }}
+                />
+            </div>
         </div>
     );
 }
