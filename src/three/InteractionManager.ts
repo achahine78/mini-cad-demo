@@ -16,6 +16,7 @@ export class InteractionManager {
         this.canvas = sceneManager.renderer.domElement;
 
         this.canvas.addEventListener("pointerdown", this.onPointerDown);
+        window.addEventListener("keydown", this.onKeyDown);
     }
 
     getPointerNdc(event: PointerEvent) {
@@ -56,6 +57,22 @@ export class InteractionManager {
             this.setHighlightValue(part, true);
         }
     }
+
+    rotateSelectedPart() {
+        if (!this.selectedPart) return;
+
+        const currentStep = this.selectedPart.userData.rotationStep ?? 0;
+        const nextStep = (currentStep + 1) % 4;
+
+        this.selectedPart.userData.rotationStep = nextStep;
+        this.selectedPart.rotation.y = nextStep * (Math.PI / 2);
+    }
+
+    onKeyDown = (event: KeyboardEvent) => {
+        if (event.key.toLowerCase() === "r") {
+            this.rotateSelectedPart();
+        }
+    };
 
     onPointerMove = (event: PointerEvent) => {
         if (!this.isDragging || !this.selectedPart) return;
@@ -119,5 +136,6 @@ export class InteractionManager {
         this.canvas.removeEventListener("pointerdown", this.onPointerDown);
         this.canvas.removeEventListener("pointermove", this.onPointerMove);
         this.canvas.removeEventListener("pointerup", this.onPointerUp);
+        window.removeEventListener("keydown", this.onKeyDown);
     }
 }
