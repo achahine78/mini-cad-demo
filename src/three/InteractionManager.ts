@@ -5,8 +5,10 @@ export class InteractionManager {
     private sceneManager: SceneManager;
     private canvas: HTMLElement;
     private raycaster = new THREE.Raycaster();
+    private dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    private isDragging = false;
 
-    selectedPart: THREE.Mesh | null;
+    selectedPart: THREE.Mesh | null = null;
 
     constructor(sceneManager: SceneManager) {
         this.sceneManager = sceneManager;
@@ -54,13 +56,57 @@ export class InteractionManager {
         }
     }
 
+    onPointerMove = (event: PointerEvent) => {
+        if (!this.isDragging || !this.selectedPart) return;
+        const pointerNdc = this.getPointerNdc(event);
+        this.raycaster.setFromCamera(pointerNdc, this.sceneManager.camera);
+
+        const intersection = new THREE.Vector3();
+
+        if (this.raycaster.ray.intersectPlane(this.dragPlane, intersection)) {
+            this.selectedPart.position.set(
+                this.snap(intersection.x, 0.5),
+                this.selectedPart.position.y,
+                this.snap(intersection.z, 0.5),
+            );
+        }
+    };
+
+    snap(value: number, gridSnap: number) {
+        return Math.round(value / gridSnap) * gridSnap;
+    }
+
+    onPointerUp = () => {
+        this.isDragging = false;
+        this.sceneManager.controls.enabled = true;
+        this.canvas.style.cursor = "";
+        this.canvas.removeEventListener("pointermove", this.onPointerMove);
+        this.canvas.removeEventListener("pointerup", this.onPointerUp);
+    };
+
     onPointerDown = (event: PointerEvent) => {
         const pointerNdc = this.getPointerNdc(event);
         const part = this.pickPart(pointerNdc);
         this.select(part);
+
+        if (!part) return;
+
+        this.dragPlane.setFromNormalAndCoplanarPoint(
+            new THREE.Vector3(0, 1, 0),
+            part.position,
+        );
+
+        this.isDragging = true;
+        this.sceneManager.controls.enabled = false;
+        this.canvas.style.cursor = "grabbing";
+
+        this.canvas.addEventListener("pointermove", this.onPointerMove);
+        this.canvas.addEventListener("pointerup", this.onPointerUp);
     };
 
     dispose() {
         this.canvas.removeEventListener("pointerdown", this.onPointerDown);
+        this.canvas.removeEventListener("pointermove", this.onPointerMove);
+        this.canvas.removeEventListener("pointerup", this.onPointerUp);
     }
 }
