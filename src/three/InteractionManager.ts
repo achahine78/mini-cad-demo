@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import type { SceneManager } from "./SceneManager";
+import { snapToGrid } from "./grid";
 
 export class InteractionManager {
     private sceneManager: SceneManager;
@@ -84,16 +85,12 @@ export class InteractionManager {
         if (this.raycaster.ray.intersectPlane(this.dragPlane, intersection)) {
             const target = intersection.add(this.grabOffset);
             this.selectedPart.position.set(
-                this.snap(target.x, 0.5),
+                snapToGrid(target.x),
                 this.selectedPart.position.y,
-                this.snap(target.z, 0.5),
+                snapToGrid(target.z),
             );
         }
     };
-
-    snap(value: number, gridSnap: number) {
-        return Math.round(value / gridSnap) * gridSnap;
-    }
 
     onPointerUp = (event: PointerEvent) => {
         this.isDragging = false;

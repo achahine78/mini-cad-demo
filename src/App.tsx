@@ -8,6 +8,7 @@ import {
     type PartDefinition,
     type PartType,
 } from "./three/PartsFactory";
+import { snapToGrid } from "./three/grid";
 
 function App() {
     const sceneManagerRef = useRef<SceneManager | null>(null);
@@ -19,8 +20,12 @@ function App() {
         if (!manager) return;
 
         const mesh = createPartMesh({ id: `part_${partCounter}`, type });
-        mesh.position.x += (Math.random() - 0.5) * 2;
-        mesh.position.z += (Math.random() - 0.5) * 2;
+        mesh.position.x = snapToGrid(
+            mesh.position.x + (Math.random() - 0.5) * 2,
+        );
+        mesh.position.z = snapToGrid(
+            mesh.position.z + (Math.random() - 0.5) * 2,
+        );
 
         manager.scene.add(mesh);
 
