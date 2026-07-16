@@ -2,6 +2,8 @@
 
 Minimal CAD-style 3D editor built with React + TS and Three.js. The point of this project is to give myself a playground to explore both the CAD problem space and 3D in the browser.
 
+![Demo of spawning, moving, and rotating parts in mini-cad-demo](media/herogif.gif)
+
 ## Features
 
 - **Parts creation** — Users can create a set of predefined parts: rectangular extrusion, flat plate, and cylindrical extrusion.
